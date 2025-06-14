@@ -7,9 +7,10 @@ import { Input } from '@/components/ui/input';
 interface TopicInputProps {
   onSubmit: (topic: string) => void;
   isLoading: boolean;
+  onBack?: () => void;
 }
 
-const TopicInput: React.FC<TopicInputProps> = ({ onSubmit, isLoading }) => {
+const TopicInput: React.FC<TopicInputProps> = ({ onSubmit, isLoading, onBack }) => {
   const [topic, setTopic] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -32,10 +33,13 @@ const TopicInput: React.FC<TopicInputProps> = ({ onSubmit, isLoading }) => {
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white">
       {/* Header */}
       <header className="container mx-auto px-6 py-8">
-        <div className="flex items-center space-x-2">
+        <button 
+          onClick={onBack}
+          className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+        >
           <Brain className="h-8 w-8 text-purple-400" />
           <span className="text-2xl font-bold">TeacherAI</span>
-        </div>
+        </button>
       </header>
 
       {/* Main Content */}

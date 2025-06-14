@@ -48,6 +48,10 @@ const Index = () => {
     }
   };
 
+  const handleBackToLanding = () => {
+    setAppState('landing');
+  };
+
   const handleBack = () => {
     setAppState('input');
   };
@@ -63,9 +67,9 @@ const Index = () => {
       case 'landing':
         return <LandingPage onGetStarted={handleGetStarted} />;
       case 'input':
-        return <TopicInput onSubmit={handleTopicSubmit} isLoading={isLoading} />;
+        return <TopicInput onSubmit={handleTopicSubmit} isLoading={isLoading} onBack={handleBackToLanding} />;
       case 'loading':
-        return <LoadingScreen topic={currentTopic} />;
+        return <LoadingScreen topic={currentTopic} onBack={handleBackToLanding} />;
       case 'results':
         return (
           <ResultsScreen
