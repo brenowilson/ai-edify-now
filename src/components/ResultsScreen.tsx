@@ -1,6 +1,8 @@
-
 import React from 'react';
-import { Brain, BookOpen, ArrowLeft, Download, Share2 } from 'lucide-react';
+import { TeacherAIPdfDownload } from "./TeacherAIPdf";
+import ReactMarkdown from 'react-markdown';
+import '../markdown.css';
+import { Brain, BookOpen, ArrowLeft, Download, Clipboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -12,26 +14,7 @@ interface ResultsScreenProps {
 }
 
 const ResultsScreen: React.FC<ResultsScreenProps> = ({ topic, content, onBack, onNewTopic }) => {
-  const formatContent = (text: string) => {
-    return text.split('\n').map((paragraph, index) => {
-      if (paragraph.trim() === '') return null;
-      
-      // Check if it's a header (starts with numbers or specific patterns)
-      if (paragraph.match(/^\d+\s*[-–]\s*/) || paragraph.match(/^[A-Z\s]+:$/)) {
-        return (
-          <h3 key={index} className="text-xl font-semibold text-purple-300 mt-6 mb-3">
-            {paragraph}
-          </h3>
-        );
-      }
-      
-      return (
-        <p key={index} className="mb-4 text-gray-200 leading-relaxed">
-          {paragraph}
-        </p>
-      );
-    });
-  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white">
@@ -77,27 +60,43 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({ topic, content, onBack, o
 
           {/* Action Buttons */}
           <div className="flex justify-center space-x-4 mb-8">
-            <Button
-              variant="outline"
-              className="border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-white"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Baixar PDF
-            </Button>
+            <TeacherAIPdfDownload topic={topic} content={content}>
+              <Button
+                variant="outline"
+                className="border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-white"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Baixar PDF
+              </Button>
+            </TeacherAIPdfDownload>
             <Button
               variant="outline"
               className="border-pink-400 text-pink-400 hover:bg-pink-400 hover:text-white"
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(content);
+                  const btn = document.getElementById('copy-btn');
+                  if (btn) {
+                    const original = btn.innerHTML;
+                    btn.innerHTML = '<span style="color:#fff">Copiado!</span>';
+                    setTimeout(() => (btn.innerHTML = original), 1200);
+                  }
+                } catch (e) {
+                  alert('Erro ao copiar para a área de transferência.');
+                }
+              }}
+              id="copy-btn"
             >
-              <Share2 className="h-4 w-4 mr-2" />
-              Compartilhar
+              <Clipboard className="h-4 w-4 mr-2" />
+              Copiar
             </Button>
           </div>
 
           {/* Content Card */}
           <Card className="bg-white/10 backdrop-blur-sm border-white/20">
             <CardContent className="p-8">
-              <div className="prose prose-invert max-w-none">
-                {formatContent(content)}
+              <div className="prose max-w-none markdown-white">
+                <ReactMarkdown>{content}</ReactMarkdown>
               </div>
             </CardContent>
           </Card>

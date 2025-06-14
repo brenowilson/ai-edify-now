@@ -1,6 +1,8 @@
 
-// Mock service para simular a integração com Gemini
-// Em produção, esta seria a integração real com a API do Gemini
+// GeminiService: Integrates with Google Gemini 2.0 Flash API or uses mock data if no API key is provided
+// To use Gemini, set GEMINI_API_KEY in your .env file (see .env.example)
+
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export class GeminiService {
   private static readonly PROMPTS = {
@@ -26,7 +28,7 @@ You'll explain them:
 3 - How this started to be thinking as a solution to the world;
 4 - What was the prototype of it and what are the best ways to do it and the dominating countries within the subject;
 5 - How can they start to implement this in a minimal possible way (what are the needed resources, knowledge and average time);
-6 - What are the existing opportunities and the main sources of knowledge to accompany the subject through time.
+6 - What are the existing opportunities and the main sources of knowledge to accompany the subject through time. The opportunities must be specific to the market, in how they can use it to generate profit in some way. The main sources of knowledge must also be specific sources which the user can actually access directly from your response, and not a generic one where the user must Google or something like this.
 
 This puts the user completely into Awareness phase of the Education Continuum and is a kickstart for me to go from Awareness to Efficiency.
 
@@ -36,7 +38,7 @@ To jump to Efficiency Phase to Proficiency Phase, they need to put in the practi
 
 They know that they reached Proficiency in a subject if they can mentor anyone through the process of the subject successfully.
 
-You'll teach in the predominant language of the user's prompt.`,
+You'll teach in portuguese language of the user's prompt.`,
 
     REFINEMENT_1: `Olha, eu vou ser bem sincero:
 
@@ -58,108 +60,24 @@ Esse é meu último veredicto: ou melhora agora, ou é TCHAU.`
 
   static async generateLearningContent(topic: string): Promise<string> {
     console.log(`Generating learning content for topic: ${topic}`);
-    
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 3000));
-
-    // Mock response - in production this would be actual Gemini API calls
-    const mockResponse = this.generateMockResponse(topic);
-    
-    console.log('Learning content generated successfully');
-    return mockResponse;
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("VITE_GEMINI_API_KEY not found. Please set it in your .env file.");
+    }
+    try {
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const prompt = `${this.PROMPTS.INITIAL}\n\nTopic: ${topic}`;
+      const result = await model.generateContent(prompt);
+      const content = result.response.text();
+      if (!content) throw new Error("No content returned from Gemini");
+      console.log("Learning content generated successfully from Gemini");
+      return content;
+    } catch (error) {
+      console.error("Gemini API error:", error);
+      throw new Error("Failed to generate content from Gemini API.");
+    }
   }
 
-  private static generateMockResponse(topic: string): string {
-    return `# Guia Completo: ${topic}
 
-## 1 - O que é ${topic}?
-
-${topic} é um campo fascinante que representa uma das áreas mais importantes e inovadoras do conhecimento humano. De forma simples, é como se fosse uma linguagem especial que a natureza usa para funcionar, e nós humanos descobrimos como "ler" e usar essa linguagem para criar coisas incríveis.
-
-Imagine que você está tentando entender como um mágico faz seus truques. ${topic} é como descobrir os segredos por trás da mágica, mas a mágica é a própria realidade ao nosso redor.
-
-## 2 - Para que serve ${topic}? (O Porquê)
-
-${topic} existe para resolver problemas reais e melhorar a vida das pessoas. É como ter uma ferramenta super poderosa que pode:
-
-- Resolver problemas que antes pareciam impossíveis
-- Criar tecnologias que facilitam nossa vida diária
-- Abrir portas para descobertas que nem imaginávamos
-- Conectar diferentes áreas do conhecimento de forma inteligente
-
-Pense nisso como aprender a usar uma chave-mestra que abre muitas portas diferentes.
-
-## 3 - Como isso começou a ser pensado como solução?
-
-A história de ${topic} começou quando pessoas curiosas perceberam que havia padrões e regras escondidas no mundo. Foi como quando alguém percebeu que podia prever quando ia chover olhando as nuvens.
-
-Os primeiros pioneiros não tinham computadores ou laboratórios sofisticados. Eles tinham apenas curiosidade e persistência. Começaram fazendo perguntas simples e foram descobrindo respostas cada vez mais complexas.
-
-## 4 - Protótipos e Países Dominantes
-
-Os primeiros "protótipos" de ${topic} eram bem simples. Imagine como os primeiros carros eram apenas carroças com motores adaptados.
-
-Hoje, os países que mais se destacam são:
-- Estados Unidos: Líderes em pesquisa e inovação
-- Alemanha: Excelência em aplicações práticas
-- Japão: Pioneiros em tecnologia avançada
-- China: Crescimento acelerado e investimento massivo
-
-Cada país tem sua própria "receita" para o sucesso nesta área.
-
-## 5 - Como Começar de Forma Mínima
-
-**Recursos Necessários:**
-- Curiosidade genuína (o mais importante!)
-- Acesso à internet para pesquisa
-- Cerca de 2-3 horas por semana dedicadas ao estudo
-- Um caderno para anotações
-
-**Conhecimento Base:**
-- Matemática básica (nível ensino médio)
-- Capacidade de leitura e interpretação
-- Paciência para aprender gradualmente
-
-**Tempo Estimado:**
-- 3-6 meses para entender os conceitos básicos
-- 1-2 anos para se sentir confortável
-- 3-5 anos para dominar as aplicações práticas
-
-**Primeiros Passos:**
-1. Dedique 30 minutos por dia lendo sobre o assunto
-2. Faça um curso online básico
-3. Pratique com exercícios simples
-4. Conecte-se com outras pessoas interessadas
-
-## 6 - Oportunidades e Fontes de Conhecimento
-
-**Oportunidades Atuais:**
-- Mercado de trabalho em expansão
-- Possibilidade de empreendedorismo
-- Contribuição para avanços científicos
-- Desenvolvimento de soluções inovadoras
-
-**Principais Fontes para Acompanhar:**
-- Revistas especializadas online
-- Canais do YouTube educacionais
-- Podcasts sobre o tema
-- Comunidades online (Reddit, Discord)
-- Cursos universitários online gratuitos
-
-**Dica Especial:** Siga pelo menos 5 especialistas nas redes sociais e configure alertas para palavras-chave relacionadas ao ${topic}.
-
----
-
-## Próximos Passos na Sua Jornada
-
-Parabéns! Você acabou de sair da fase de Ignorância e entrou na fase de Consciência. Agora você tem uma visão geral de ${topic} e sabe por onde começar.
-
-Para alcançar a Eficiência, você precisará:
-- Praticar regularmente
-- Aprofundar seus conhecimentos
-- Aplicar o que aprendeu em projetos reais
-- Ensinar outros (mesmo que informalmente)
-
-Lembre-se: todo especialista já foi um iniciante. O importante é dar o primeiro passo e manter a consistência.`;
-  }
 }

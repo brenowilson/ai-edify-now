@@ -1,0 +1,40 @@
+/* Custom styles for markdown rendering in ResultsScreen */
+.markdown-white {
+  color: #fff;
+}
+.markdown-white h1,
+.markdown-white h2,
+.markdown-white h3,
+.markdown-white h4,
+.markdown-white h5,
+.markdown-white h6 {
+  color: #fff;
+  margin-top: 2.2em;
+  margin-bottom: 0.7em;
+  font-weight: 700;
+}
+.markdown-white p {
+  color: #fff;
+  margin-bottom: 1.2em;
+  margin-top: 0.7em;
+  line-height: 1.8;
+}
+.markdown-white ul,
+.markdown-white ol {
+  color: #fff;
+  margin-bottom: 1.3em;
+  margin-top: 0.7em;
+  padding-left: 1.5em;
+}
+.markdown-white li {
+  margin-bottom: 0.5em;
+}
+.markdown-white strong {
+  color: #fff;
+}
+.markdown-white code {
+  color: #fff;
+  background: #2d2d2d;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+}
